@@ -1,25 +1,426 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.example</groupId>
-  <artifactId>MyApiMultiThreadedProject</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
+    <groupId>org.example</groupId>
+    <artifactId>MyApiMultiThreadedProject</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
-  <name>MyApiMultiThreadedProject</name>
-  <url>http://maven.apache.org</url>
+    <properties>
+        <java.version>11</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <cucumber.version>7.14.0</cucumber.version>
+        <rest-assured.version>5.3.2</rest-assured.version>
+        <junit.version>4.13.2</junit.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <thread.count>10</thread.count>
+        <cucumber.parallel.enabled>true</cucumber.parallel.enabled>
+        <cucumber.parallel.threads>1</cucumber.parallel.threads>
+        <cucumber.filter.tags>@regression</cucumber.filter.tags>
+        <maven.build.timestamp.format>yyyMMdd-HHmmss</maven.build.timestamp.format>
+        <cucumber.report.json.filename>cucumber-${maven.build.timestamp}</cucumber.report.json.filename>
+        <rerunFailingTestsCount>1</rerunFailingTestsCount>
+        <logback.configurationFile>src/test/resources/logback-test.xml</logback.configurationFile>
+    </properties>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <dependencies>
+        <!--api-->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${rest-assured.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>${rest-assured.version}</version>
+        </dependency>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+        <!--cucumber-->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>${cucumber.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-core</artifactId>
+            <version>${cucumber.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-gherkin</artifactId>
+            <version>${cucumber.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>gherkin</artifactId>
+            <version>26.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-plugin</artifactId>
+            <version>${cucumber.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-picocontainer</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--junit-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--json-->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.2</version>
+        </dependency>
+
+        <!-- Reporting -->
+        <dependency>
+            <groupId>net.masterthought</groupId>
+            <artifactId>maven-cucumber-reporting</artifactId>
+            <version>5.7.5</version>
+        </dependency>
+
+        <!-- Utilities-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- JSON Schema Validator -->
+<!--        <dependency>-->
+<!--            <groupId>com.github.everit-org.json-schema</groupId>-->
+<!--            <artifactId>org.everit.json.schema</artifactId>-->
+<!--            <version>1.14.2</version>-->
+<!--        </dependency>-->
+
+        <!-- JSON Simple -->
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.5.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.9</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>7.14.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>1.9.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite-engine</artifactId>
+            <version>1.9.2</version>
+            <scope>test</scope>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>tech.grasshoper</groupId>-->
+<!--            <artifactId>extentreports-cucumber7-adapter</artifactId>-->
+<!--            <version>1.14.0</version>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>com.aventstack</groupId>
+            <artifactId>extentreports</artifactId>
+            <version>5.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.soap</groupId>
+            <artifactId>javax.xml.soap-api</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources/features/profileLite</directory>
+                <includes>
+                    <include>**/*.feature</include>
+                </includes>
+            </testResource>
+        </testResources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.2</version>
+                <configuration>
+                    <testFailureIgnore>true</testFailureIgnore>
+                    <parallel>methods</parallel>
+                    <useUnlimitedThreads>false</useUnlimitedThreads>
+                    <threadCount>${cucumber.parallel.threads}</threadCount>
+                    <perCoreThreadCount>false</perCoreThreadCount>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <rerunFailingTestsCount>1</rerunFailingTestsCount>
+
+                    <argLine>
+                        -Xms1024m
+                        -XX:MaxMetaspaceSize=256m
+                        -Xms512m
+                    </argLine>
+
+                    <includes>
+                        <include>**/ParallelTestRunner.java</include>
+                    </includes>
+
+                    <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                    <systemPropertyVariables>
+                        <rerun.delay>72000</rerun.delay>
+                        <logback.configurationFile>${logback.configurationFile}</logback.configurationFile>
+                    </systemPropertyVariables>
+                    <argLine>
+                        -Dlogback.configurationFile=${logback.configurationFile}
+                    </argLine>
+                    <properties>
+                        <configurationParameters>
+                            cucumber.junit-platform.naming-strategy=long
+                            cucumber.execution.parallel.enabled=${cucumber.parallel.enabled}
+                            cucumber.execution.parallel.config.strategy=fixed
+                            cucumber.execution.parallel.config.fixed.parallelism=${cucumber.parallel.threads}
+                            cucumber.filter.tags=${cucumber.filter.tags}
+                            cucumber.plugin=pretty,\
+                            html:target/cucumber-reports/cucumber-rerun.html,\
+                            json:target/cucumber-reports/cucumber-rerun.json,\
+                            rerun:target/rerun.txt
+                        </configurationParameters>
+                    </properties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.masterthought</groupId>
+                <artifactId>maven-cucumber-reporting</artifactId>
+                <version>5.7.5</version>
+                <executions>
+                    <execution>
+                        <id>execution</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <projectName>AIR4 - Loyalty</projectName>
+                            <skip>false</skip>
+                            <outputDirectory>target/cucumber-reports</outputDirectory>
+                            <inputDirectory>target/cucumber-reports</inputDirectory>
+                            <jsonFiles>
+                                <param>**/*.json</param>
+                            </jsonFiles>
+                            <mergeFeaturesById>true</mergeFeaturesById>
+                            <mergeFeaturesWithRetest>true</mergeFeaturesWithRetest>
+                            <checkBuildResult>false</checkBuildResult>
+                            <skipEmptyJSONFiles>true</skipEmptyJSONFiles>
+                            <classifications>
+                                <Platform>Windows</Platform>
+                                <Environment>QA</Environment>
+                            </classifications>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>clean-target</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <!--backup reports before clean-->
+                    <execution>
+                        <id>backup-before-clean</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo message="Backing up reports before clean"/>
+                                <mkdir dir="${project.build.directory}/backup-reports"/>
+                                <copy todir="${project.build.directory}/backup-reports" overwrite="true" failonerror="false">
+                                    <fileset dir="${project.build.directory}/cucumber-reports" erroronmissingdir="false">
+                                        <include name="**/*.json"/>
+                                        <include name="**/*.html"/>
+                                    </fileset>
+                                </copy>
+                                <echo message="Deleting log files"/>
+                                <delete dir="${project.basedir}/logs"/>
+                                <mkdir dir="${project.basedir}/logs"/>
+                            </target>
+                        </configuration>
+                    </execution>
+
+                    <!--backup after each test run-->
+                    <execution>
+                        <id>backup-after-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo message="Backing up reports after test"/>
+                                <mkdir dir="${project.build.directory}/backup-reports"/>
+                                <copy todir="${project.build.directory}/backup-reports" overwrite="false" failonerror="false">
+                                    <fileset dir="${project.build.directory}/cucumber-reports" erroronmissingdir="false">
+                                        <include name="**/*.json"/>
+                                        <include name="**/*.html"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+
+                    <!-- copy back reports before next run-->
+                    <execution>
+                        <id>restore-before-next-run</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo message="Restoring reports before next run"/>
+                                <mkdir dir="${project.build.directory}/cucumber-reports"/>
+                                <copy todir="${project.build.directory}/cucumber-reports" overwrite="false" failonerror="false">
+                                    <fileset dir="${project.build.directory}/backup-reports" erroronmissingdir="false">
+                                        <include name="**/*.json"/>
+                                        <include name="**/*.html"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>miles</id>
+            <properties>
+                    <cucumber.parallel.threads>5</cucumber.parallel.threads>
+                    <cucumber.filter.tags>@miles</cucumber.filter.tags>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>profiles</id>
+            <properties>
+                <cucumber.parallel.threads>2</cucumber.parallel.threads>
+                <cucumber.filter.tags>@profiles</cucumber.filter.tags>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>regression</id>
+            <properties>
+                <cucumber.parallel.threads>18</cucumber.parallel.threads>
+                <cucumber.filter.tags>@regression</cucumber.filter.tags>
+            </properties>
+        </profile>
+    </profiles>
 </project>
