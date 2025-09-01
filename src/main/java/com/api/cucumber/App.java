@@ -1,4 +1,4 @@
-package org.example;
+package com.api.cucumber;
 
 /**
  * Hello world!
